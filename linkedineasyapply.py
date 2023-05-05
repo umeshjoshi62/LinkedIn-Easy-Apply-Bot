@@ -13,6 +13,7 @@ class LinkedinEasyApply:
         self.email = parameters['email']
         self.password = parameters['password']
         self.disable_lock = parameters['disableAntiLock']
+        self.disable_slowscroll = parameters['disableSlowScroll']
         self.company_blacklist = parameters.get('companyBlacklist', []) or []
         self.title_blacklist = parameters.get('titleBlacklist', []) or []
         self.positions = parameters.get('positions', [])
@@ -121,11 +122,15 @@ class LinkedinEasyApply:
             raise Exception("No more jobs on this page")
 
         try:
-            job_results = self.browser.find_element_by_class_name("jobs-search-results")
-            self.scroll_slow(job_results)
-            self.scroll_slow(job_results, step=300, reverse=True)
+            #job_results = self.browser.find_element_by_class_name("jobs-search-results")
+            job_results = self.browser.find_element_by_class_name("scaffold-layout__list-container")
+            if not self.disable_slowscroll :
+                self.scroll_slow(job_results)
+                self.scroll_slow(job_results, step=300, reverse=True)
 
-            job_list = self.browser.find_elements_by_class_name('jobs-search-results__list')[0].find_elements_by_class_name('jobs-search-results__list-item')
+            #job_list = self.browser.find_elements_by_class_name('jobs-search-results__list')[0].find_elements_by_class_name('jobs-search-results__list-item')
+            job_list = self.browser.find_elements_by_class_name('scaffold-layout__list-container')[0].find_elements_by_class_name('jobs-search-results__list-item')
+
         except:
             raise Exception("No more jobs on this page")
 
@@ -210,8 +215,9 @@ class LinkedinEasyApply:
 
         try:
             job_description_area = self.browser.find_element_by_class_name("jobs-search__job-details--container")
-            self.scroll_slow(job_description_area, end=1600)
-            self.scroll_slow(job_description_area, end=1600, step=400, reverse=True)
+            if not self.disable_slowscroll :
+                self.scroll_slow(job_description_area, end=1600)
+                self.scroll_slow(job_description_area, end=1600, step=400, reverse=True)
         except:
             pass
 
@@ -729,4 +735,3 @@ class LinkedinEasyApply:
                          "&keywords=" + position + location + "&start=" + str(job_page*25))
 
         self.avoid_lock()
-

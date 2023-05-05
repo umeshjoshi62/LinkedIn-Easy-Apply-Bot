@@ -1,9 +1,16 @@
-import yaml, pdb
+import yaml
+import pdb
+import requests
+import wget
+import zipfile
+import os
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 from linkedineasyapply import LinkedinEasyApply
 from validate_email import validate_email
+from selenium.webdriver.chrome.service import Service
+
 
 def init_browser():
     browser_options = Options()
@@ -13,7 +20,8 @@ def init_browser():
     for option in options:
         browser_options.add_argument(option)
 
-    driver = webdriver.Chrome(ChromeDriverManager().install(), chrome_options=browser_options)
+    #driver = webdriver.Chrome(ChromeDriverManager().install(), chrome_options=browser_options)
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=browser_options)
 
     driver.set_window_position(0, 0)
     driver.maximize_window()
@@ -117,16 +125,35 @@ def validate_yaml():
 
     return parameters
 
+def chromium_install():
+    # totally legally acquired this from Stack Overflow.
+
+    # get the latest chrome driver version number
+    url = 'https://chromedriver.storage.googleapis.com/LATEST_RELEASE'
+    response = requests.get(url)
+    version_number = response.text
+
+    # build the donwload url
+    download_url = "https://chromedriver.storage.googleapis.com/" + version_number + "/chromedriver_win32.zip"
+
+    # download the zip file using the url built above
+    latest_driver_zip = wget.download(download_url, 'chromedriver.zip')
+
+    # extract the zip file
+    with zipfile.ZipFile(latest_driver_zip, 'r') as zip_ref:
+        zip_ref.extractall()  # you can specify the destination folder path here
+    # delete the zip file downloaded above
+    os.remove(latest_driver_zip)
+
 
 if __name__ == '__main__':
+    chromium_install()
     parameters = validate_yaml()
     browser = init_browser()
-
+    
     bot = LinkedinEasyApply(parameters, browser)
     bot.login()
     bot.security_check()
     bot.start_applying()
-
-
 
 

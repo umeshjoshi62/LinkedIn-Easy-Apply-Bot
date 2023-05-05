@@ -1,7 +1,9 @@
-email: email@domain.com
-password: yourpassword
+email: test@test.in
+password: test
 
 disableAntiLock: False
+
+disableSlowScroll: True
 
 remote: False
 
@@ -29,11 +31,14 @@ date:
  24 hours: False
  
 positions:
+ - data analyst
+ - Sr financial analyst
  #- First position
  #- A second position
  #- A third position
  #- ...
 locations:
+ - remote
  #- First location
  #- A second location
  #- A third location
